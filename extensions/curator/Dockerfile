@@ -11,3 +11,4 @@ WORKDIR /usr/share/curator
 COPY config ./config
 
 ENTRYPOINT ["/entrypoint.sh"]
+RUN ["chmod", "+x", "/entrypoint.sh"]
