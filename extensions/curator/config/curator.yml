@@ -19,6 +19,6 @@ client:
   master_only: False
 
 logging:
-  loglevel: DEBUG
+  loglevel: WARNING
   logfile:
   logformat: default
