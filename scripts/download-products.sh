@@ -11,7 +11,12 @@ update_csv_permissions() {
 
 move_csvs() {
   mv -f "$TMP_LOCATION/feed-"*".csv" "$PRODUCTS_LOCATION/"
-  update_csv_permissions
+  #update_csv_permissions
+}
+
+move_altex_csvs() {
+  mv -f "$TMP_LOCATION/altex-"*".csv" "$PRODUCTS_LOCATION/"
+  #update_csv_permissions
 }
 
 download_products_from_feed() {
@@ -22,6 +27,17 @@ download_products_from_feed() {
 
   echo "Downloading feed $1"
   curl -L -f -o "$TMP_LOCATION/feed-$1-$now.csv" "https://api.2performant.com/feed/$1.csv"
+}
+
+download_products_from_altex() {
+  now=$(date +%Y-%m-%d)
+
+  exec > >(tee -i -a $LOG_LOCATION/products-$now.log)
+  exec 2>&1
+
+  echo "Downloading altex feed"
+  curl -L -f -o "$TMP_LOCATION/altex-$now.csv" "http://afiliere.altex.ro/ProductFeed?ent=k8ii6jjNSMfuFVB6gZmhmw%253d%253d"
+  python3 /home/andrei/scripts/altex-parser.py "$TMP_LOCATION/altex-$now.csv"
 }
 
 download_products_from_feed 28d491fd8
@@ -40,3 +56,7 @@ sleep 5m
 download_products_from_feed daf9a7716
 
 move_csvs
+
+download_products_from_altex
+
+move_altex_csvs
