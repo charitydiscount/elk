@@ -1,4 +1,4 @@
-version: "3.2"
+version: '3.2'
 
 services:
   elasticsearch:
@@ -16,10 +16,10 @@ services:
         source: elasticsearch
         target: /usr/share/elasticsearch/data
     ports:
-      - "9200:9200"
-      - "9300:9300"
+      - '9200:9200'
+      - '9300:9300'
     environment:
-      ES_JAVA_OPTS: "-Xmx1g -Xms1g"
+      ES_JAVA_OPTS: '-Xmx1g -Xms1g'
       ELASTIC_PASSWORD: changeme
       # Use single node discovery in order to disable production mode and avoid bootstrap checks
       # see https://www.elastic.co/guide/en/elasticsearch/reference/current/bootstrap-checks.html
@@ -45,10 +45,10 @@ services:
         source: $PRODUCTS_LOCATION
         target: /var/products
     ports:
-      - "5000:5000"
-      - "9600:9600"
+      - '5000:5000'
+      - '9600:9600'
     environment:
-      LS_JAVA_OPTS: "-Xmx512m -Xms512m"
+      LS_JAVA_OPTS: '-Xmx512m -Xms512m'
     networks:
       - elk
     depends_on:
@@ -65,9 +65,9 @@ services:
         target: /usr/share/kibana/config/kibana.yml
         read_only: true
     ports:
-      - "5601:5601"
+      - '5601:5601'
     environment:
-      LS_JAVA_OPTS: "-Xmx512m -Xms512m"
+      LS_JAVA_OPTS: '-Xmx512m -Xms512m'
     networks:
       - elk
     depends_on:
@@ -92,10 +92,26 @@ services:
     build:
       context: nginx/
     ports:
-    - "80:80"
-    - "443:443"
+      - '80:80'
+      - '443:443'
     environment:
-      CERTBOT_EMAIL: "support@charitydiscount.ro"
+      CERTBOT_EMAIL: 'support@charitydiscount.ro'
+    networks:
+      - elk
+
+  gateway:
+    restart: always
+    image: andreistefanie/charitydiscount-gateway
+    ports:
+      - 3000:3000
+    secrets:
+      - service_account
+    environment:
+      GOOGLE_APPLICATION_CREDENTIALS: /run/secrets/service_account
+      FIREBASE_NAME: charitydiscount
+      ELASTIC_ENDPOINT: http://elasticsearch:9200
+      ELASTIC_USERNAME: changeme
+      ELASTIC_PASSWORD: changeme
     networks:
       - elk
 
@@ -105,3 +121,7 @@ networks:
 
 volumes:
   elasticsearch:
+
+secrets:
+  service_account:
+    file: /changeme/charitydiscount.json
