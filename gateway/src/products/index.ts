@@ -108,3 +108,39 @@ export const getFeaturedProducts = async () => {
     return undefined;
   }
 };
+
+export const getSimilarProducts = async (
+  productId: string,
+  { page = 0, size = 20 }
+) => {
+  if (!productId) {
+    return [];
+  }
+  try {
+    const { body } = await client.search({
+      index: indeces.PRODUCTS_INDEX,
+      body: {
+        query: {
+          more_like_this: {
+            fields: ['title', 'category'],
+            like: [
+              {
+                _index: 'products',
+                _id: productId.trim(),
+              },
+            ],
+            min_term_freq: 1,
+          },
+        },
+        size,
+        from: page,
+      },
+    });
+
+    return body.hits;
+  } catch (error) {
+    console.log(error.message);
+  }
+
+  return [];
+};

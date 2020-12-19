@@ -1,5 +1,9 @@
 import { Router } from 'express';
-import { getFeaturedProducts, searchProducts } from '../products';
+import {
+  getFeaturedProducts,
+  getSimilarProducts,
+  searchProducts,
+} from '../products';
 import { searchPrograms } from '../programs';
 
 const router = Router();
@@ -15,10 +19,12 @@ router.get('/products', async (req, res) => {
 });
 
 router.get('/programs', async (req, res) => {
-  const hits = await searchPrograms(
-    req.query.query as string,
-    req.query.exact === 'true'
-  );
+  const hits = await searchPrograms(req.query.query as string);
+  return res.json(hits);
+});
+
+router.post('/products/similar', async (req, res) => {
+  const hits = await getSimilarProducts(req.body.query as string, req.query);
   return res.json(hits);
 });
 

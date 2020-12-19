@@ -1,6 +1,7 @@
 import * as express from 'express';
 import helmet = require('helmet');
 import bearerToken = require('express-bearer-token');
+import bodyParser = require('body-parser');
 import { corsMw, firebaseAuth } from '../middlwares';
 import router from './routes';
 
@@ -11,6 +12,7 @@ app.options('*', corsMw);
 
 app.use(helmet());
 app.use(bearerToken());
+app.use(bodyParser.json());
 
 app.use(firebaseAuth);
 
