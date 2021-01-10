@@ -104,3 +104,47 @@ const searchRelevantProducts = async (query: string): Promise<string[]> => {
 
   return [];
 };
+
+export const searchRelevantPrograms = async (
+  query: string
+): Promise<string[]> => {
+  try {
+    const { body } = await client.search({
+      index: indeces.PRODUCTS_INDEX,
+      body: {
+        query: {
+          multi_match: {
+            fields: ['campaign_name^3', 'title'],
+            query: query,
+          },
+        },
+        size: 0,
+        aggs: {
+          dedup: {
+            terms: {
+              field: 'campaign_id.keyword',
+            },
+            aggs: {
+              dedup_docs: {
+                top_hits: {
+                  size: 1,
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    body.aggregations.dedup.buckets.sort(
+      (b1: any, b2: any) =>
+        (b1.dedup_docs.hits.max_score as number) -
+        (b2.dedup_docs.hits.max_score as number)
+    );
+    return body.aggregations.dedup.buckets.map((b: any) => b.dedup_docs.hits);
+  } catch (e) {
+    console.log(e.meta.body.error);
+  }
+
+  return [];
+};

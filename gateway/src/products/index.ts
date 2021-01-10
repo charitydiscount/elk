@@ -169,3 +169,32 @@ export const getPriceHistory = async (productId: string) => {
 
   return { hits: [] };
 };
+
+export const getProductsForProgram = async (
+  programName: string,
+  { from = 0, size = 20 }
+) => {
+  if (!programName) {
+    return { hits: [] };
+  }
+  try {
+    const { body } = await client.search({
+      index: indeces.PRODUCTS_INDEX,
+      body: {
+        query: {
+          term: {
+            'campaign_name.keyword': { value: programName },
+          },
+        },
+        size: size,
+        from: from,
+      },
+    });
+
+    return body.hits;
+  } catch (error) {
+    console.log(error.message);
+  }
+
+  return { hits: [] };
+};
