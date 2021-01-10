@@ -23,4 +23,7 @@ export const indeces = {
   get PRODUCTS_INDEX() {
     return 'products';
   },
+  get PRICES_INDEX() {
+    return 'prices-*';
+  },
 };

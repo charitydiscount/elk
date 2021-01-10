@@ -114,7 +114,7 @@ export const getSimilarProducts = async (
   { page = 0, size = 20 }
 ) => {
   if (!productId) {
-    return [];
+    return { hits: [] };
   }
   try {
     const { body } = await client.search({
@@ -142,5 +142,30 @@ export const getSimilarProducts = async (
     console.log(error.message);
   }
 
-  return [];
+  return { hits: [] };
+};
+
+export const getPriceHistory = async (productId: string) => {
+  if (!productId) {
+    return { hits: [] };
+  }
+  try {
+    const { body } = await client.search({
+      index: indeces.PRICES_INDEX,
+      body: {
+        query: {
+          term: {
+            _id: { value: productId },
+          },
+        },
+        size: 45,
+      },
+    });
+
+    return body.hits;
+  } catch (error) {
+    console.log(error.message);
+  }
+
+  return { hits: [] };
 };

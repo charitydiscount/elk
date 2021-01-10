@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import {
   getFeaturedProducts,
+  getPriceHistory,
   getSimilarProducts,
   searchProducts,
 } from '../products';
@@ -25,6 +26,11 @@ router.get('/programs', async (req, res) => {
 
 router.post('/products/similar', async (req, res) => {
   const hits = await getSimilarProducts(req.body.query as string, req.query);
+  return res.json(hits);
+});
+
+router.post('/products/history', async (req, res) => {
+  const hits = await getPriceHistory(req.body.query as string);
   return res.json(hits);
 });
 
