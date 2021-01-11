@@ -4,6 +4,7 @@ import bearerToken = require('express-bearer-token');
 import bodyParser = require('body-parser');
 import { corsMw, firebaseAuth } from '../middlwares';
 import router from './routes';
+import logger from './log';
 
 const app = express();
 
@@ -15,6 +16,7 @@ app.use(bearerToken());
 app.use(bodyParser.json());
 
 app.use(firebaseAuth);
+app.use(logger);
 
 app.use('/search', router);
 

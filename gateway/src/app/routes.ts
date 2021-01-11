@@ -45,4 +45,9 @@ router.post('/programs/:programName/products', async (req, res) => {
   return res.json(hits);
 });
 
+router.post('/programs/:programName/similar', async (req, res) => {
+  const hits = await getProductsForProgram(req.params.programName, req.query);
+  return res.json(hits);
+});
+
 export default router;
